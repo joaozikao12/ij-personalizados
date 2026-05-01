@@ -1,4 +1,3 @@
-
 const express = require('express');
 const session = require('express-session');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
@@ -24,7 +23,7 @@ app.use(helmet({
   hsts: { maxAge: 31536000, includeSubDomains: true, preload: true }
 }));
 
-app.use(cors({ origin: "https://ij-personalizados.onrender.com", credentials: true }));
+app.use(cors({ origin: "https://ij-personalizados-1.onrender.com", credentials: true }));
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 200 }));
 
 const store = new SequelizeStore({ db: sequelize });
@@ -68,6 +67,30 @@ app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).render("erro", { mensagem: "Ocorreu um erro inesperado." });
 });
+
+// ==========================================
+// 🔑 CRIAR ADMIN AUTOMATICAMENTE
+// ==========================================
+const Usuario = require('./models/Usuario');
+(async () => {
+  try {
+    const adminExistente = await Usuario.findOne({ where: { email: 'admin@ijpersonalizados.com' } });
+    if (!adminExistente) {
+      await Usuario.create({
+        nome: 'Administrador IJ',
+        email: 'admin@ijpersonalizados.com',
+        senha_hash: 'Admin@123',
+        role: 'admin'
+      });
+      console.log('✅ Admin criado com sucesso!');
+    } else {
+      console.log('✅ Admin já existe!');
+    }
+  } catch (err) {
+    console.log('⚠️ Erro ao criar admin:', err.message);
+  }
+})();
+// ==========================================
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log("http://localhost:" + PORT));
