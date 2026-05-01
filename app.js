@@ -24,7 +24,7 @@ app.use(helmet({
   hsts: { maxAge: 31536000, includeSubDomains: true, preload: true }
 }));
 
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(cors({ origin: "https://ij-personalizados.onrender.com", credentials: true }));
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 200 }));
 
 const store = new SequelizeStore({ db: sequelize });
