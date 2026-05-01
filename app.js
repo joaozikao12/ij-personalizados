@@ -9,7 +9,13 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-sequelize.sync();
+
+// Sincronizar banco ANTES de tudo
+sequelize.sync({ force: false }).then(() => {
+  console.log('✅ Banco de dados sincronizado');
+}).catch(err => {
+  console.error('❌ Erro no banco:', err);
+});
 
 app.use(helmet({
   contentSecurityPolicy: {
@@ -23,22 +29,23 @@ app.use(helmet({
   hsts: { maxAge: 31536000, includeSubDomains: true, preload: true }
 }));
 
-app.use(cors({ origin: "https://ij-personalizados-1.onrender.com", credentials: true }));
+app.use(cors({ origin: "*", credentials: true }));
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 200 }));
 
 const store = new SequelizeStore({ db: sequelize });
 app.use(session({
-  secret: process.env.SESSION_SECRET,
+  secret: process.env.SESSION_SECRET || 'IJpersonalizados2024@Seguro!',
   store: store,
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === "production",
+    secure: false,
     httpOnly: true,
     maxAge: 86400000,
     sameSite: "lax"
   }
 }));
+
 store.sync();
 
 app.use(express.urlencoded({ extended: true, limit: "1mb" }));
@@ -68,11 +75,9 @@ app.use((err, req, res, next) => {
   res.status(500).render("erro", { mensagem: "Ocorreu um erro inesperado." });
 });
 
-// ==========================================
-// 🔑 CRIAR ADMIN AUTOMATICAMENTE
-// ==========================================
-const Usuario = require('./models/Usuario');
-(async () => {
+// Criar admin automaticamente (DEPOIS do banco sync)
+setTimeout(async () => {
+  const Usuario = require('./models/Usuario');
   try {
     const adminExistente = await Usuario.findOne({ where: { email: 'admin@ijpersonalizados.com' } });
     if (!adminExistente) {
@@ -89,8 +94,7 @@ const Usuario = require('./models/Usuario');
   } catch (err) {
     console.log('⚠️ Erro ao criar admin:', err.message);
   }
-})();
-// ==========================================
+}, 3000);
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log("http://localhost:" + PORT));
+app.listen(PORT, () => console.log("Servidor rodando na porta " + PORT));
