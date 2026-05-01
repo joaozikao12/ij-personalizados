@@ -1,0 +1,25 @@
+
+<%- include('../partials/header') %>
+<h2>Produtos</h2>
+<form method="GET" action="/produtos" class="mb-4">
+  <div class="input-group">
+    <input type="text" name="busca" class="form-control" placeholder="Buscar caneca..." value="<%= busca %>">
+    <button class="btn btn-outline-secondary">Buscar</button>
+  </div>
+</form>
+<div class="row">
+  <% if (produtos.length === 0) { %><p>Nenhum produto encontrado.</p><% } %>
+  <% produtos.forEach(produto => { %>
+    <div class="col-md-3 mb-4">
+      <div class="card">
+        <img src="<%= produto.imagem || 'https://via.placeholder.com/300x300?text=Caneca' %>" class="card-img-top" alt="<%= produto.nome %>">
+        <div class="card-body">
+          <h5 class="card-title"><%= produto.nome %></h5>
+          <p class="card-text">R$ <%= parseFloat(produto.preco).toFixed(2) %></p>
+          <a href="/produtos/<%= produto.id %>" class="btn btn-primary">Ver detalhes</a>
+        </div>
+      </div>
+    </div>
+  <% }); %>
+</div>
+<%- include('../partials/footer') %>

@@ -1,0 +1,31 @@
+
+<%- include('../partials/header') %>
+<h2>Cadastro</h2>
+<% if (erros.length > 0) { %>
+  <div class="alert alert-danger">
+    <% erros.forEach(e => { %><p><%= e.msg %></p><% }); %>
+  </div>
+<% } %>
+<form method="POST" action="/auth/cadastro">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <div class="mb-3">
+    <label>Nome completo</label>
+    <input type="text" name="nome" class="form-control" value="<%= dados.nome || '' %>" required>
+  </div>
+  <div class="mb-3">
+    <label>E-mail</label>
+    <input type="email" name="email" class="form-control" value="<%= dados.email || '' %>" required>
+  </div>
+  <div class="mb-3">
+    <label>Senha</label>
+    <input type="password" name="senha" class="form-control" required>
+    <small class="text-muted">Minimo 8 caracteres, com maiuscula, minuscula, numero e caractere especial.</small>
+  </div>
+  <div class="mb-3">
+    <label>Confirmar senha</label>
+    <input type="password" name="confirmar_senha" class="form-control" required>
+  </div>
+  <button class="btn btn-primary">Cadastrar</button>
+  <a href="/auth/login" class="btn btn-link">Ja tem conta? Login</a>
+</form>
+<%- include('../partials/footer') %>

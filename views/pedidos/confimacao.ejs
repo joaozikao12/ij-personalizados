@@ -1,0 +1,21 @@
+<%- include('../partials/header') %>
+
+<div class="text-center mt-5">
+  <h1 class="text-success">✅ Pedido #<%= pedido.id %> Confirmado!</h1>
+  <p class="lead mt-3">Seu pedido foi recebido com sucesso.</p>
+  
+  <div class="alert alert-info mt-4">
+    <h4>📱 Envie os detalhes para o WhatsApp</h4>
+    <p>Clique no botão abaixo para nos enviar os detalhes do pedido e combinarmos a entrega:</p>
+    <a href="<%= pedido.whatsappLink %>" target="_blank" class="btn btn-success btn-lg">
+      <i class="bi bi-whatsapp"></i> Enviar Pedido pelo WhatsApp
+    </a>
+  </div>
+  
+  <div class="mt-4">
+    <a href="/pedidos" class="btn btn-primary">Ver Meus Pedidos</a>
+    <a href="/produtos" class="btn btn-secondary">Continuar Comprando</a>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

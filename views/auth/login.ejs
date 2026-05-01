@@ -1,0 +1,22 @@
+
+<%- include('../partials/header') %>
+<h2>Login</h2>
+<% if (erros.length > 0) { %>
+  <div class="alert alert-danger">
+    <% erros.forEach(e => { %><p><%= e.msg %></p><% }); %>
+  </div>
+<% } %>
+<form method="POST" action="/auth/login">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <div class="mb-3">
+    <label>E-mail</label>
+    <input type="email" name="email" class="form-control" value="<%= dados.email || '' %>" required>
+  </div>
+  <div class="mb-3">
+    <label>Senha</label>
+    <input type="password" name="senha" class="form-control" required>
+  </div>
+  <button class="btn btn-primary">Entrar</button>
+  <a href="/auth/cadastro" class="btn btn-link">Criar conta</a>
+</form>
+<%- include('../partials/footer') %>

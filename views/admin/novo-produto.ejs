@@ -1,0 +1,15 @@
+
+<%- include('../partials/header') %>
+<h2>Novo produto</h2>
+<% if (erros.length > 0) { %><div class="alert alert-danger"><% erros.forEach(e => { %><p><%= e.msg %></p><% }); %></div><% } %>
+<form method="POST" action="/admin/produtos/novo">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <div class="mb-3"><label>Nome</label><input type="text" name="nome" class="form-control" value="<%= dados.nome || '' %>" required></div>
+  <div class="mb-3"><label>Descricao</label><textarea name="descricao" class="form-control"><%= dados.descricao || '' %></textarea></div>
+  <div class="mb-3"><label>Preco (R$)</label><input type="number" step="0.01" name="preco" class="form-control" value="<%= dados.preco || '' %>" required></div>
+  <div class="mb-3"><label>URL da imagem</label><input type="text" name="imagem" class="form-control" value="<%= dados.imagem || '' %>"></div>
+  <div class="mb-3"><label>Estoque</label><input type="number" name="estoque" class="form-control" value="<%= dados.estoque || 0 %>" required></div>
+  <button class="btn btn-primary">Salvar</button>
+  <a href="/admin/produtos" class="btn btn-secondary">Cancelar</a>
+</form>
+<%- include('../partials/footer') %>

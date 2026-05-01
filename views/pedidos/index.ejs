@@ -1,0 +1,13 @@
+
+<%- include('../partials/header') %>
+<h2>Meus pedidos</h2>
+<% if (pedidos.length === 0) { %><p>Voce ainda nao tem pedidos.</p><% } %>
+<% pedidos.forEach(pedido => { %>
+  <div class="card mb-3">
+    <div class="card-header">Pedido #<%= pedido.id %> - Status: <%= pedido.status %> - Total: R$ <%= parseFloat(pedido.total).toFixed(2) %></div>
+    <div class="card-body">
+      <p>Endereco: <%= pedido.endereco_entrega %></p>
+    </div>
+  </div>
+<% }); %>
+<%- include('../partials/footer') %>

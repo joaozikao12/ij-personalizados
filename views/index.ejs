@@ -1,0 +1,25 @@
+
+<%- include('partials/header') %>
+<div class="text-center mb-5">
+  <h1>Bem-vindo a IJ Personalizados</h1>
+  <p class="lead">Canecas personalizadas com a sua cara!</p>
+</div>
+<h2>Produtos em destaque</h2>
+<div class="row">
+  <% if (produtos.length === 0) { %>
+    <p>Nenhum produto cadastrado ainda.</p>
+  <% } %>
+  <% produtos.forEach(produto => { %>
+    <div class="col-md-3 mb-4">
+      <div class="card">
+        <img src="<%= produto.imagem || 'https://via.placeholder.com/300x300?text=Caneca' %>" class="card-img-top" alt="<%= produto.nome %>">
+        <div class="card-body">
+          <h5 class="card-title"><%= produto.nome %></h5>
+          <p class="card-text">R$ <%= parseFloat(produto.preco).toFixed(2) %></p>
+          <a href="/produtos/<%= produto.id %>" class="btn btn-primary">Ver detalhes</a>
+        </div>
+      </div>
+    </div>
+  <% }); %>
+</div>
+<%- include('partials/footer') %>
