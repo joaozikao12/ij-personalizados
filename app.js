@@ -116,6 +116,9 @@ setTimeout(async () => {
     console.log('⚠️ Erro ao criar admin:', err.message);
   }
 }, 3000);
+app.get('/teste', (req, res) => {
+  res.render('teste');
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Servidor rodando na porta ${PORT}`));
