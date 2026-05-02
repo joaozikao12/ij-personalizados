@@ -23,6 +23,7 @@ router.post('/login', rateLimit({ windowMs: 900000, max: 10, skipSuccessfulReque
     req.session.usuarioId = usuario.id;
     req.session.usuarioNome = usuario.nome;
     req.session.usuarioRole = usuario.role;
+    req.session.usuarioEmail = usuario.email;
     const redir = req.session.returnTo || '/';
     delete req.session.returnTo;
     res.redirect(redir);
@@ -50,6 +51,7 @@ router.post('/cadastro', [
     req.session.usuarioId = novo.id;
     req.session.usuarioNome = novo.nome;
     req.session.usuarioRole = novo.role;
+    req.session.usuarioEmail = novo.email;
     res.redirect('/');
   } catch (err) {
     res.status(500).render('erro', { mensagem: 'Erro ao criar conta.' });
