@@ -1,7 +1,7 @@
-
 const { DataTypes } = require('sequelize');
 const sequelize = require('./index');
-module.exports = sequelize.define('Produto', {
+
+const Produto = sequelize.define('Produto', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   nome: { type: DataTypes.STRING(100), allowNull: false },
   descricao: DataTypes.TEXT,
@@ -9,3 +9,5 @@ module.exports = sequelize.define('Produto', {
   imagem: DataTypes.STRING(255),
   estoque: { type: DataTypes.INTEGER, defaultValue: 0 }
 });
+
+module.exports = Produto;

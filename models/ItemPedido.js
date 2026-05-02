@@ -1,4 +1,3 @@
-
 const { DataTypes } = require('sequelize');
 const sequelize = require('./index');
 const Pedido = require('./Pedido');
@@ -12,6 +11,8 @@ const ItemPedido = sequelize.define('ItemPedido', {
 
 ItemPedido.belongsTo(Pedido);
 Pedido.hasMany(ItemPedido);
+
 ItemPedido.belongsTo(Produto);
 Produto.hasMany(ItemPedido);
+
 module.exports = ItemPedido;
