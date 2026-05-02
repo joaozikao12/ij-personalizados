@@ -21,24 +21,25 @@ router.get('/', auth, async (req, res) => {
 });
 
 // Finalizar compra (checkout)
-router.post('/checkout', auth, [
-  body('nome').trim().isLength({ min: 3 }),
-  body('telefone').notEmpty(),
-  body('cep').notEmpty(),
-  body('logradouro').notEmpty(),
-  body('numero').notEmpty(),
-  body('bairro').notEmpty(),
-  body('cidade').notEmpty(),
-  body('estado').isLength({ min: 2, max: 2 })
-], async (req, res) => {
-  const erros = validationResult(req);
-  if (!erros.isEmpty()) {
-    return res.render('carrinho/checkout', { 
-      carrinho: req.session.carrinho, 
-      erros: erros.array(), 
-      dados: req.body 
-    });
+router.post('/checkout', (req, res) => {
+  const { nome, cep, logradouro, numero, bairro, cidade, estado, pagamento } = req.body;
+  let erros = [];
+
+  if (!nome) erros.push({ msg: 'Nome é obrigatório' });
+  if (!cep) erros.push({ msg: 'CEP é obrigatório' });
+  // ... outras validações
+
+  if (erros.length > 0) {
+    req.flash('erros', erros);
+    req.flash('dados', req.body);   // guarda os dados preenchidos
+    return res.redirect('/carrinho');
   }
+
+  // Se tudo ok, cria pedido, limpa carrinho...
+  req.session.carrinho = [];
+  res.redirect('/pedidos/confirmacao');
+});
+  
 
   if (!req.session.carrinho || req.session.carrinho.length === 0) {
     return res.redirect('/carrinho');
@@ -105,7 +106,7 @@ router.post('/checkout', auth, [
     console.error(err);
     res.status(500).render('erro', { mensagem: 'Erro ao finalizar compra.' });
   }
-});
+
 
 // Página de confirmação
 router.get('/confirmacao', auth, (req, res) => {

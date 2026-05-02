@@ -3,9 +3,10 @@ const session = require('express-session');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const sequelize = require('./models/index');
 const helmet = require('helmet');
-const csrf = require('./middleware/csrf');
+const csrf = require('./middleware/csrf');           // confirme o caminho (pode ser ./middlewares/csrf)
 const rateLimit = require('express-rate-limit');
 const cors = require('cors');
+const flash = require('connect-flash');               // 🔹 ADICIONADO
 require('dotenv').config();
 
 const app = express();
@@ -17,6 +18,7 @@ sequelize.sync({ force: false }).then(() => {
   console.error('❌ Erro no banco:', err);
 });
 
+// Segurança
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -32,6 +34,7 @@ app.use(helmet({
 app.use(cors({ origin: "*", credentials: true }));
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 200 }));
 
+// Sessão
 const store = new SequelizeStore({ db: sequelize });
 app.use(session({
   secret: process.env.SESSION_SECRET || 'IJpersonalizados2024@Seguro!',
@@ -39,30 +42,47 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false,
+    secure: false,           // coloque true se estiver em produção com HTTPS
     httpOnly: true,
     maxAge: 86400000,
     sameSite: "lax"
   }
 }));
-
 store.sync();
 
+// Flash messages (deve vir depois da sessão)
+app.use(flash());
+
+// Parse de formulários
 app.use(express.urlencoded({ extended: true, limit: "1mb" }));
 app.use(express.json({ limit: "1mb" }));
+
+// CSRF (depois do body parser)
 app.use(csrf);
 
+// 🔹 Variáveis globais para todas as views (sempre disponíveis)
 app.use((req, res, next) => {
   res.locals.csrfToken = req.csrfToken();
-  res.locals.usuario = req.session.usuarioId ? { id: req.session.usuarioId, nome: req.session.usuarioNome, role: req.session.usuarioRole } : null;
+  res.locals.usuario = req.session.usuarioId ? { 
+    id: req.session.usuarioId, 
+    nome: req.session.usuarioNome, 
+    role: req.session.usuarioRole 
+  } : null;
   res.locals.carrinhoCount = req.session.carrinho ? req.session.carrinho.length : 0;
+  
+  // 🔹 Disponibiliza flash messages para as views
+  res.locals.erros = req.flash('erros');      // array de erros
+  res.locals.dados = req.flash('dados')[0] || {};  // dados preenchidos (se houver)
+  
   next();
 });
 
+// Configuração do template engine
 app.set("view engine", "ejs");
 app.set("views", "./views");
 app.use(express.static("public"));
 
+// Rotas
 app.use("/", require("./routes/index"));
 app.use("/auth", require("./routes/auth"));
 app.use("/produtos", require("./routes/produtos"));
@@ -70,12 +90,13 @@ app.use("/carrinho", require("./routes/carrinho"));
 app.use("/pedidos", require("./routes/pedidos"));
 app.use("/admin", require("./routes/admin"));
 
+// Tratamento de erro 500 (deve ficar por último)
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  console.error('❌ Erro interno:', err.stack);
   res.status(500).render("erro", { mensagem: "Ocorreu um erro inesperado." });
 });
 
-// Criar admin automaticamente (DEPOIS do banco sync)
+// Criar admin automaticamente (evite setTimeout, use async logo após sync)
 setTimeout(async () => {
   const Usuario = require('./models/Usuario');
   try {
@@ -97,4 +118,4 @@ setTimeout(async () => {
 }, 3000);
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log("Servidor rodando na porta " + PORT));
+app.listen(PORT, () => console.log(`🚀 Servidor rodando na porta ${PORT}`));
